@@ -1,3 +1,4 @@
+<!-- Adapted from https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse#8398189 -->
 <html>
     <script type="text/javascript">
     var canvas, ctx, flag = false,
@@ -88,5 +89,10 @@
         <br>
         <input type="button" value="Process" id="btn" size="30" onclick="save()">
         <input type="button" value="Clear" id="clr" size="23" onclick="erase()">
+        <br>
+        <form id="myForm" action="/uploadimage" method="post" enctype="multipart/form-data">
+            <input type="file" size="60" name="myfile">
+            <input type="submit" value="Ajax File Submit">
+        </form>
     </body>
     </html>
