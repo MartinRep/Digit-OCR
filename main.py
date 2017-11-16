@@ -1,5 +1,6 @@
 # https://stackoverflow.com/questions/28982974/flask-restful-upload-image#28983544
 from flask import Flask, jsonify, render_template, request, make_response
+from PIL import Image
 import os
 app = Flask(__name__)
  
@@ -10,8 +11,11 @@ def getImage():
 @app.route("/uploadimage", methods=['POST'])
 def processImage():
     file = request.files['myfile']
-    # extension = os.path.splitext(file.filename)[1]
-    file.save('uploads/'+file.filename)
+    img = Image.open(file)
+    img = img.resize((28, 28), Image.ANTIALIAS)
+    jpeg_img = Image.new("RGB", img.size, (255,255,255))
+    jpeg_img.paste(img, img)
+    jpeg_img.save('uploads/submitted.jpg')
     return make_response("success")
  
 if __name__ == "__main__":
