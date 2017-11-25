@@ -4,17 +4,18 @@
 
 <html>
     <head>
-        <script>{% include 'static/js/index.js' %}</script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
     </head>
-    <body onload="init()">
+    <body>
         <canvas id="can" width="280" height="280" style="border:2px solid;"></canvas>
         <br>
-        <input type="button" value="Ajax Canvas Submit" id="btn" size="30" onclick="submitImg()">
-        <input type="button" value="Clear" id="clr" size="23" onclick="erase()">
+        <input id="submit" type="button" value="Canvas Submit" id="btn" size="30">
+        <input id="clear" type="button" value="Clear" id="clr" size="23">
         <br>
         <form id="myForm" action="/uploadimage" method="post" enctype="multipart/form-data">
             <input type="file" size="60" name="imageSub">
-            <input type="submit" value="Submit the file...">
+            <input type="submit" value="Submit the file.">
         </form>
     </body>
     <script type="">
