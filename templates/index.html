@@ -1,6 +1,11 @@
 <!-- Adapted from https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse#8398189 -->
 <!-- Adapted from https://stackoverflow.com/questions/12168909/blob-from-dataurl -->
+<!-- Adapted from https://stackoverflow.com/questions/27917471/pass-parameter-with-python-flask-in-external-javascript#27926189 -->
+
 <html>
+    <head>
+        <script>{% include 'static/js/index.js' %}</script>
+    </head>
     <body onload="init()">
         <canvas id="can" width="280" height="280" style="border:2px solid;"></canvas>
         <br>
@@ -8,93 +13,9 @@
         <input type="button" value="Clear" id="clr" size="23" onclick="erase()">
         <br>
         <form id="myForm" action="/uploadimage" method="post" enctype="multipart/form-data">
-            <input type="file" size="60" name="myfile">
-            <input type="submit" value="Ajax File Submit">
+            <input type="file" size="60" name="imageSub">
+            <input type="submit" value="Submit the file...">
         </form>
     </body>
-    <script type="text/javascript">
-    
-    var flag = false,
-        prevX,
-        prevY,
-        currX = 0,
-        currY = 0,
-        strokeColor = "black",
-        drawWidth = 10;
-
-    function init() 
-    {
-        canvas = document.getElementById('can');
-        ctx = canvas.getContext("2d");
-
-        canvas.addEventListener("mousemove", function (e) 
-        {
-            if(flag)
-            {
-                prevX = currX;
-                prevY = currY;
-                currX = e.clientX - canvas.offsetLeft;
-                currY = e.clientY - canvas.offsetTop;
-                draw();
-            }
-        }, false);
-        canvas.addEventListener("mousedown", function (e) 
-        {
-            currX = e.clientX - canvas.offsetLeft;  //Sets start position for drawing
-            currY = e.clientY - canvas.offsetTop;
-            flag = true;
-        }, false);
-        canvas.addEventListener("mouseup", function (e) 
-        {
-            flag = false;
-        }, false);
-        canvas.addEventListener("mouseout", function (e) 
-        {
-            flag = false;
-        }, false);
-    }
-
-    function draw() 
-    {
-        ctx.beginPath();
-        ctx.moveTo(prevX, prevY);
-        ctx.lineTo(currX, currY);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = drawWidth;
-        ctx.stroke();
-        ctx.arc(currX, currY, drawWidth/2, 0, 2*Math.PI)
-        ctx.fill();
-        ctx.closePath();
-    }
-
-    function erase() 
-    {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        document.getElementById("canvasimg").style.display = "none";
-    }
-
-    function submitImg() 
-    {
-        var dataURL = canvas.toDataURL("image/png");
-        var blob = dataURItoBlob(dataURL);
-        var formData = new FormData();
-        formData.append('myfile',blob);
-        var request = new XMLHttpRequest();
-        request.open("POST", "/uploadimage", true);
-        request.send(formData);
-    }
-
-    function dataURItoBlob(dataURI) {   // convert base64 to raw binary data held in a string
-        var byteString = atob(dataURI.split(',')[1]);   // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]  // separate out the mime component
-        var ab = new ArrayBuffer(byteString.length);    // write the bytes of the string to an ArrayBuffer
-        var ia = new Uint8Array(ab);    // create a view into the buffer
-        for (var i = 0; i < byteString.length; i++) // set the bytes of the buffer to the correct values
-        {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        var blob = new Blob([ab], {type: mimeString});  // write the ArrayBuffer to a blob, and you're done
-        return blob;
-    }
-        </script>
+    <script type="">
     </html>

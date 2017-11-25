@@ -2,6 +2,8 @@
 from flask import Flask, jsonify, render_template, request, make_response
 from PIL import Image
 import os
+import keras as kr
+
 app = Flask(__name__)
  
 @app.route("/")
@@ -10,9 +12,9 @@ def getImage():
 
 @app.route("/uploadimage", methods=['POST'])
 def processImage():
-    file = request.files['myfile']
+    file = request.files['imageSub']
     img = Image.open(file)
-    img = img.resize((28, 28), Image.ANTIALIAS)
+    img = img.resize((28, 28), Image.LANCZOS)
     jpeg_img = Image.new("RGB", img.size, (255,255,255))
     jpeg_img.paste(img, img)
     jpeg_img.save('uploads/submitted.jpg')
