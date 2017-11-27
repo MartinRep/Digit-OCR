@@ -1,3 +1,5 @@
+// Adapted from https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse#8398189
+// Adapted from https://stackoverflow.com/questions/12168909/blob-from-dataurl
 class Main
 {
     constructor()
