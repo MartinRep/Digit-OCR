@@ -1,6 +1,6 @@
 # https://stackoverflow.com/questions/28982974/flask-restful-upload-image#28983544
 from flask import Flask, jsonify, render_template, request, make_response
-from PIL import Image
+from PIL import Image, ImageOps
 import os
 import keras as kr
 from mlearning import model
@@ -25,9 +25,15 @@ def convolutional(input):
 def getImg(file):
     img = Image.open(file).convert("L")
     img = img.resize((28, 28), Image.LANCZOS)
-    jpeg_img = Image.new("L", img.size, (255))
-    jpeg_img.paste(img, (0,0,28,28), img)
-    return img, jpeg_img
+    return img
+
+def getCanvasImg(file):
+    img = Image.open(file)
+    img = img.resize((28, 28), Image.LANCZOS)
+    imgCanvas = Image.new("L", img.size, (255))
+    imgCanvas.paste(img, img)
+    imgCanvas = ImageOps.invert(imgCanvas)
+    return imgCanvas
 
 def getPrediction(img):
     # Get prediction from pretrained model
@@ -41,17 +47,19 @@ def getImage():
 def processImage():
     
     if request.files.get('imageSub',None):
-        img, jpeg_img = getImg(request.files['imageSub'])
+        img = getCanvasImg(request.files['imageSub'])
         print('Image')
     else:
-        img, jpeg_img = getImg(request.files['fileSub'])
+        img = getImg(request.files['fileSub'])
         print('File')
-    img.save('uploads/submitted.png')
+    img.save('uploads/submitted.png', format="png")
     # jpeg_img.save('uploads/submitted.jpg')
-    input = (np.asarray(jpeg_img, dtype=np.uint8)).reshape(1, 784)
-    print(input.shape)
-    output = convolutional(input)
+    # input = (np.asarray(jpeg_img, dtype=np.uint8)).reshape(1, 784)
+    # output = convolutional(input)
+    # print(convolutional(input))
+    input = (np.asarray(img, dtype=np.uint8)).reshape(1, 784)
     print(convolutional(input))
+    output = convolutional(input)
     return jsonify(result=output)
  
 if __name__ == "__main__":
