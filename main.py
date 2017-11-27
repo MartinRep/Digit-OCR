@@ -23,10 +23,10 @@ def convolutional(input):
     return sess.run(y2, feed_dict={x: input, keep_prob: 1.0}).flatten().tolist()
 
 def getImg(file):
-    img = Image.open(file)
+    img = Image.open(file).convert("L")
     img = img.resize((28, 28), Image.LANCZOS)
     jpeg_img = Image.new("L", img.size, (255))
-    jpeg_img.paste(img, img)
+    jpeg_img.paste(img, (0,0,28,28), img)
     return img, jpeg_img
 
 def getPrediction(img):
@@ -39,16 +39,20 @@ def getImage():
 
 @app.route("/uploadimage", methods=['POST'])
 def processImage():
-    img, jpeg_img = getImg(request.files['imageSub'])
+    
+    if request.files.get('imageSub',None):
+        img, jpeg_img = getImg(request.files['imageSub'])
+        print('Image')
+    else:
+        img, jpeg_img = getImg(request.files['fileSub'])
+        print('File')
     img.save('uploads/submitted.png')
     # jpeg_img.save('uploads/submitted.jpg')
-    # input = ((255 - np.array(img, dtype=np.uint8)) / 255.0).reshape(1, 784)
-    input = np.asarray(jpeg_img)
-    input = input.T
+    input = (np.asarray(jpeg_img, dtype=np.uint8)).reshape(1, 784)
     print(input.shape)
-    input = input.reshape(1, 784)
+    output = convolutional(input)
     print(convolutional(input))
-    return render_template('index.html')
+    return jsonify(result=output)
  
 if __name__ == "__main__":
     app.run()
