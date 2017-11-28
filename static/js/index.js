@@ -68,9 +68,13 @@ class Main
         var formData = new FormData();
         formData.append('imageSub',blob);
         var request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-            //deal with response, errors.
-        }
+        request.onload = function(e) {
+            if (this.status == 200) {
+                document.getElementById("prediction").innerHTML =
+                request.response.prediction;
+            }
+          };
+        request.responseType = 'json';
         request.open("POST", "/uploadimage", true);
         request.send(formData);
     }
