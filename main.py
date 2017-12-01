@@ -58,6 +58,7 @@ def processImage():
     print(prediction)
     data = {'prediction': str(prediction)}
     return jsonify(data)
+    # return render_template('prediction.html', prediction = str(prediction))
  
 if __name__ == "__main__":
     app.run()

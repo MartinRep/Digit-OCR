@@ -61,12 +61,21 @@ class Main
         this.ctx.closePath();
     }
 
-    submitImg() 
+    submitImg(input) 
     {
-        var dataURL = this.canvas.toDataURL("image/png");
-        var blob = this.dataURItoBlob(dataURL);
         var formData = new FormData();
-        formData.append('imageSub',blob);
+        if (input == 'canvas')
+        {
+            var inputElement = this.dataURItoBlob(this.canvas.toDataURL("image/png"));
+            formData.append('imageSub',inputElement);
+        } 
+        else
+        {
+            let file = document.querySelector("input[type='file']")
+            var inputElement = file.files[0];
+            formData.append('fileSub',inputElement);
+        }
+        console.log(inputElement);
         var request = new XMLHttpRequest();
         request.onload = function(e) {
             if (this.status == 200) {
@@ -98,7 +107,10 @@ $(() => {
     $('#clear').click(() => {
         main.init();
     });
-    $('#submit').click(() => {
-        main.submitImg();
+    $('#submitCanvas').click(() => {
+        main.submitImg('canvas');
+    });
+    $('#submitFile').click(() => {
+        main.submitImg('file');
     });
 });

@@ -8,14 +8,11 @@
     <body>
         <canvas id="can" width="280" height="280" style="border:2px solid;"></canvas>
         <br>
-        <input id="submit" type="button" value="Canvas Submit" id="btn" size="30">
-        <input id="clear" type="button" value="Clear" id="clr" size="23">
+        <input id="submitCanvas" type="button" value="Canvas Submit" size="30">
+        <input id="clear" type="button" value="Clear"size="23">
         <br>
-        <form id="myForm" action="/uploadimage" method="post" enctype="multipart/form-data">
-            <input type="file" size="60" name="fileSub">
-            <input type="submit" value="Submit the file.">
-        </form>
+        <input type="file" size="60" name="fileSub">
+        <input id="submitFile" type="button" value="Submit the file.">
         <p id="prediction"></p>
     </body>
-    <script type="">
     </html>
