@@ -1,5 +1,6 @@
 # https://stackoverflow.com/questions/28982974/flask-restful-upload-image#28983544
 # https://stackoverflow.com/questions/42497340/how-to-convert-one-hot-encodings-into-integers
+# https://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them#423596
 
 from flask import Flask, jsonify, render_template, request, make_response
 from PIL import Image, ImageOps
@@ -9,16 +10,20 @@ import tensorflow as tf
 import numpy as np
 
 app = Flask(__name__)
- 
+
+input = 0
 x = tf.placeholder("float", [None, 784])    # Tf variable for input
 sess = tf.Session()
 
-# restore trained data
+# Model
 with tf.variable_scope("convolutional"):
     keep_prob = tf.placeholder("float")
     y, variables = model.convolutional(x, keep_prob)
+    y_ = tf.placeholder(tf.float32, [None, 10])
+    cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 saver = tf.train.Saver(variables)
-saver.restore(sess, "mlearning/data/convolutional.ckpt")
+saver.restore(sess, "mlearning/data/convolutional.ckpt")    # restore trained data
 
 def convolutional(input):   # Takes in image 1D array, returns model prediction
     return sess.run(y, feed_dict={x: input, keep_prob: 1.0}).flatten().tolist()
@@ -37,9 +42,6 @@ def getCanvasImg(file): # Process Canvas image
     return img
 
 def uptrain_model(image, label):
-    y_ = tf.placeholder(tf.float32, [None, 10])
-    cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
-    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     sess.run(train_step, feed_dict={x: image, y_: label, keep_prob: 0.5})
 
 @app.route("/")
@@ -53,7 +55,8 @@ def processImage():
     else:
         img = getImg(request.files['fileSub'])
     # img.save('uploads/submitted.png', format="png")
-    global input = (np.asarray(img, dtype=np.uint8)).reshape(1, 784)   # Reshape image to 1D array.
+    global input
+    input = (np.asarray(img, dtype=np.uint8)).reshape(1, 784)   # Reshape image to 1D array.
     prediction = np.argmax(convolutional(input), axis=0)    # Gets prediction as vector and converts it into integer
     data = {'prediction': str(prediction)}
     return jsonify(data)    # sends back the result
@@ -61,7 +64,12 @@ def processImage():
 @app.route("/uploadlabel", methods=['POST'])
 def processLabel():
     print(request.label)
-
+    uptrain_model(input, (np.eye(10)[request.label]))
     return render_template('thankyou.html')
+
+@app.route("/thankyou", methods=['GET'])
+def thankyou():
+    return render_template('thankyou.html')
+
 if __name__ == "__main__":
     app.run()
