@@ -77,11 +77,12 @@ function doConfirm(msg, yesFn, noFn)
 
 function uploadLabel() 
 {
-    let formData = new FormData();
-    formData.append('label', '0')
-    let request = new XMLHttpRequest();
-    request.open("POST", "/uploadlabel", true);
-    request.send(formData);
+    var labelData = new FormData();
+    labelData.append('imagelabel', '0');
+    var labelRequest = new XMLHttpRequest();
+    labelRequest.open("POST", "/uploadlabel", true);
+    console.log(labelData);
+    labelRequest.send(labelData);
 }
 
 function submitImg(input) 
@@ -106,7 +107,6 @@ function submitImg(input)
         if (this.status == 200) 
         {
             let answer = request.response.prediction;
-            document.getElementById("prediction").innerHTML = answer;
             doConfirm("The Anwer is "+answer+" right?",
                 function() 
                 {
@@ -114,13 +114,14 @@ function submitImg(input)
                 },
                 function() 
                 {
-                    window.location = '/thankyou';
+                    uploadLabel();
                 });
         }
         };
 
     request.responseType = 'json';
     request.open("POST", "/uploadimage", true);
+    console.log(formData);
     request.send(formData);
 }
 

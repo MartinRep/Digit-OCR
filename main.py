@@ -42,6 +42,7 @@ def getCanvasImg(file): # Process Canvas image
     return img
 
 def uptrain_model(image, label):
+    sess.run(tf.global_variables_initializer())
     sess.run(train_step, feed_dict={x: image, y_: label, keep_prob: 0.5})
 
 @app.route("/")
@@ -63,8 +64,10 @@ def processImage():
 
 @app.route("/uploadlabel", methods=['POST'])
 def processLabel():
-    print(request.label)
-    uptrain_model(input, (np.eye(10)[request.label]))
+    print(request.form.get("imagelabel"))
+    label = np.eye(10)[np.array(int(request.form.get("imagelabel")))]
+    label = label.reshape(1,10)
+    uptrain_model(input, label)
     return render_template('thankyou.html')
 
 @app.route("/thankyou", methods=['GET'])
