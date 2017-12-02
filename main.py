@@ -64,7 +64,6 @@ def processImage():
 
 @app.route("/uploadlabel", methods=['POST'])
 def processLabel():
-    print(request.form.get("imagelabel"))
     label = np.eye(10)[np.array(int(request.form.get("imagelabel")))]
     label = label.reshape(1,10)
     uptrain_model(input, label)

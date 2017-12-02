@@ -75,13 +75,38 @@ function doConfirm(msg, yesFn, noFn)
     confirmBox.show();
 }
 
-function uploadLabel() 
+function doLabels()
+{
+    let labelBox = $("#labelBox");
+    labelBox.find(".message").text("What is the right answer?");
+    labelBox.find(".b0,.b1,.b2,.b3,.b4,.b5,.b6,.b7,.b8,.b9").unbind().click(() =>
+    {
+        labelBox.hide();
+    });
+    $("#b0").click( () => { console.log('0'); uploadLabel(0); });
+    $("#b1").click( () => { uploadLabel(1); });
+    $("#b2").click( () => { uploadLabel(2); });
+    $("#b3").click( () => { uploadLabel(3); });
+    $("#b4").click( () => { uploadLabel(4); });
+    $("#b5").click( () => { uploadLabel(5); });
+    $("#b6").click( () => { uploadLabel(6); });
+    $("#b7").click( () => { uploadLabel(7); });
+    $("#b8").click( () => { uploadLabel(8); });
+    $("#b9").click( () => { uploadLabel(9); });
+    labelBox.show();
+}
+
+function uploadLabel(label) 
 {
     var labelData = new FormData();
-    labelData.append('imagelabel', '0');
+    labelData.append('imagelabel', label);
     var labelRequest = new XMLHttpRequest();
     labelRequest.open("POST", "/uploadlabel", true);
-    console.log(labelData);
+    console.log(label);
+    labelRequest.onload = function() 
+    {
+        window.location = '/thankyou';
+    }
     labelRequest.send(labelData);
 }
 
@@ -99,7 +124,6 @@ function submitImg(input)
         var inputElement = file.files[0];
         formData.append('fileSub',inputElement);
     }
-    // console.log(inputElement);
     let request = new XMLHttpRequest();
     
     request.onload = function() 
@@ -114,7 +138,7 @@ function submitImg(input)
                 },
                 function() 
                 {
-                    uploadLabel();
+                    doLabels();
                 });
         }
         };
