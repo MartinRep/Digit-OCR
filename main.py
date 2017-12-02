@@ -67,6 +67,10 @@ def processLabel():
     label = np.eye(10)[np.array(int(request.form.get("imagelabel")))]
     label = label.reshape(1,10)
     uptrain_model(input, label)
+    path = saver.save(
+        sess, 'mlearning/data/convolutional.ckpt',
+        write_meta_graph=False, write_state=False)
+    print("Saved:", path)
     return render_template('thankyou.html')
 
 @app.route("/thankyou", methods=['GET'])
