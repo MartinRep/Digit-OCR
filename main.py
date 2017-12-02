@@ -4,42 +4,43 @@
 from flask import Flask, jsonify, render_template, request, make_response
 from PIL import Image, ImageOps
 import os
-import keras as kr
 from mlearning import model
 import tensorflow as tf
 import numpy as np
 
 app = Flask(__name__)
  
-x = tf.placeholder("float", [None, 784])
+x = tf.placeholder("float", [None, 784])    # Tf variable for input
 sess = tf.Session()
 
 # restore trained data
 with tf.variable_scope("convolutional"):
     keep_prob = tf.placeholder("float")
-    y2, variables = model.convolutional(x, keep_prob)
+    y, variables = model.convolutional(x, keep_prob)
 saver = tf.train.Saver(variables)
 saver.restore(sess, "mlearning/data/convolutional.ckpt")
 
-def convolutional(input):
-    return sess.run(y2, feed_dict={x: input, keep_prob: 1.0}).flatten().tolist()
+def convolutional(input):   # Takes in image 1D array, returns model prediction
+    return sess.run(y, feed_dict={x: input, keep_prob: 1.0}).flatten().tolist()
 
-def getImg(file):
-    img = Image.open(file).convert("L")
-    img = img.resize((28, 28), Image.LANCZOS)
+def getImg(file):   # process file submission
+    img = Image.open(file).convert("L") # converts image to BW
+    img = img.resize((28, 28), Image.LANCZOS)   # resize the image to 28x28 pixels using Lanczos model
     return img
 
-def getCanvasImg(file):
-    imgCanvas = Image.open(file)
-    imgCanvas = imgCanvas.resize((28, 28), Image.LANCZOS)
-    img = Image.new("L", imgCanvas.size, (255))
-    img.paste(imgCanvas, imgCanvas)
-    img = ImageOps.invert(img)
+def getCanvasImg(file): # Process Canvas image 
+    imgCanvas = Image.open(file)    # open file as image
+    imgCanvas = imgCanvas.resize((28, 28), Image.LANCZOS)   # Resize using Lanczos method
+    img = Image.new("L", imgCanvas.size, (255)) # Creates empty BW image
+    img.paste(imgCanvas, imgCanvas) # parses image to BW imgage
+    img = ImageOps.invert(img)  # inverts image
     return img
 
-def getPrediction(img):
-    # Get prediction from pretrained model
-    return 0
+def uptrain_model(image, label):
+    y_ = tf.placeholder(tf.float32, [None, 10])
+    cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+    sess.run(train_step, feed_dict={x: image, y_: label, keep_prob: 0.5})
 
 @app.route("/")
 def getImage():
@@ -47,18 +48,20 @@ def getImage():
 
 @app.route("/uploadimage", methods=['POST'])
 def processImage():
-    
-    if request.files.get('imageSub',None):
-        img = getCanvasImg(request.files['imageSub'])
+    if request.files.get('imageSub',None):  #Checks for canvas or file submission
+        img = getCanvasImg(request.files['imageSub'])   # Process the canvas submission
     else:
         img = getImg(request.files['fileSub'])
-    img.save('uploads/submitted.png', format="png")
-    input = (np.asarray(img, dtype=np.uint8)).reshape(1, 784)
-    prediction = np.argmax(convolutional(input), axis=0)
-    print(prediction)
+    # img.save('uploads/submitted.png', format="png")
+    global input = (np.asarray(img, dtype=np.uint8)).reshape(1, 784)   # Reshape image to 1D array.
+    prediction = np.argmax(convolutional(input), axis=0)    # Gets prediction as vector and converts it into integer
     data = {'prediction': str(prediction)}
-    return jsonify(data)
-    # return render_template('prediction.html', prediction = str(prediction))
- 
+    return jsonify(data)    # sends back the result
+
+@app.route("/uploadlabel", methods=['POST'])
+def processLabel():
+    print(request.label)
+
+    return render_template('thankyou.html')
 if __name__ == "__main__":
     app.run()
