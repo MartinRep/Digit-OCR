@@ -15,3 +15,8 @@ Prerequirements:
 ## Machine Learning model
 Prediction model was trained using [MNIST](https://en.wikipedia.org/wiki/MNIST_database) data set.
 Fully trained model is located in `/mlearning/data/` folder under `convolutional.clpt` file.
+
+## Usage
+Model will predict with high probability canvas or file input. If prediction is incorrect, user can correct it and app will adjust, retrain the model.
+
+![demo](https://github.com/MartinRep/Digit-OCR/blob/master/assets/demo.gif)
