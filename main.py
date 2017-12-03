@@ -2,6 +2,7 @@
 # Adapted from https://stackoverflow.com/questions/42497340/how-to-convert-one-hot-encodings-into-integers
 # Adapted from https://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them#423596
 # Adapted from https://github.com/sugyan/tensorflow-mnist
+# Adapted from https://github.com/fdivitto/ESPWebFramework
 
 from flask import Flask, jsonify, render_template, request, make_response
 from PIL import Image, ImageOps
