@@ -11,11 +11,10 @@ import numpy as np
 
 app = Flask(__name__)
 
-input = 0
+# Model
 x = tf.placeholder("float", [None, 784])    # Tf variable for input
 sess = tf.Session()
-
-# Model
+sess.run(tf.global_variables_initializer())
 with tf.variable_scope("convolutional"):
     keep_prob = tf.placeholder("float")
     y, variables = model.convolutional(x, keep_prob)
@@ -25,7 +24,7 @@ with tf.variable_scope("convolutional"):
 saver = tf.train.Saver(variables)
 saver.restore(sess, "mlearning/data/convolutional.ckpt")    # restore trained data
 
-def convolutional(input):   # Takes in image 1D array, returns model prediction
+def convolutional(input):   # Takes in image as 1D array, returns model prediction
     return sess.run(y, feed_dict={x: input, keep_prob: 1.0}).flatten().tolist()
 
 def getImg(file):   # process file submission
@@ -41,38 +40,44 @@ def getCanvasImg(file): # Process Canvas image
     img = ImageOps.invert(img)  # inverts image
     return img
 
+# continues training of the model with user input
 def uptrain_model(image, label):
-    sess.run(tf.global_variables_initializer())
-    sess.run(train_step, feed_dict={x: image, y_: label, keep_prob: 0.5})
+    sess.run(train_step, feed_dict={x: image, y_: label})
 
 @app.route("/")
-def getImage():
+def root():
     return render_template('index.html')
 
+# Image from canvas and image from a file are processed slightly different
 @app.route("/uploadimage", methods=['POST'])
 def processImage():
     if request.files.get('imageSub',None):  #Checks for canvas or file submission
         img = getCanvasImg(request.files['imageSub'])   # Process the canvas submission
     else:
         img = getImg(request.files['fileSub'])
-    # img.save('uploads/submitted.png', format="png")
-    global input
+    # dev only - save processed image
+    img.save('uploads/submitted.png', format="png")
     input = (np.asarray(img, dtype=np.uint8)).reshape(1, 784)   # Reshape image to 1D array.
     prediction = np.argmax(convolutional(input), axis=0)    # Gets prediction as vector and converts it into integer
-    data = {'prediction': str(prediction)}
-    return jsonify(data)    # sends back the result
+    # data = {'prediction': str(prediction)}
+    return jsonify(prediction = str(prediction))    # sends back the result
 
+# Process feedback from user and retrian the model with new data
 @app.route("/uploadlabel", methods=['POST'])
 def processLabel():
+    # Gets label and converts it to hot vector array
     label = np.eye(10)[np.array(int(request.form.get("imagelabel")))]
     label = label.reshape(1,10)
+    # train the model
     uptrain_model(input, label)
+    # Model save to disk
     path = saver.save(
         sess, 'mlearning/data/convolutional.ckpt',
-        write_meta_graph=False, write_state=False)
+        write_meta_graph=True, write_state=True)
     print("Saved:", path)
     return render_template('thankyou.html')
 
+# called after prediction or feedback is done
 @app.route("/thankyou", methods=['GET'])
 def thankyou():
     return render_template('thankyou.html')
