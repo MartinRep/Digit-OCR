@@ -47,6 +47,8 @@ function onMouseUpOrOut()
 function init() 
 {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    $("#confirmBox").hide();
+    $("#labelBox").hide();
 }
 
 function draw() 

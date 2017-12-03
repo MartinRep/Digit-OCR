@@ -1,6 +1,7 @@
-# https://stackoverflow.com/questions/28982974/flask-restful-upload-image#28983544
-# https://stackoverflow.com/questions/42497340/how-to-convert-one-hot-encodings-into-integers
-# https://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them#423596
+# Adapted from https://stackoverflow.com/questions/28982974/flask-restful-upload-image#28983544
+# Adapted from https://stackoverflow.com/questions/42497340/how-to-convert-one-hot-encodings-into-integers
+# Adapted from https://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them#423596
+# Adapted from https://github.com/sugyan/tensorflow-mnist
 
 from flask import Flask, jsonify, render_template, request, make_response
 from PIL import Image, ImageOps
@@ -12,7 +13,7 @@ import numpy as np
 app = Flask(__name__)
 
 # Model
-x = tf.placeholder("float", [None, 784])    # Tf variable for input
+x = tf.placeholder("float", [None, 784])    # Tf variable for img input
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 with tf.variable_scope("convolutional"):
@@ -52,14 +53,13 @@ def root():
 @app.route("/uploadimage", methods=['POST'])
 def processImage():
     if request.files.get('imageSub',None):  #Checks for canvas or file submission
-        img = getCanvasImg(request.files['imageSub'])   # Process the canvas submission
+        img = getCanvasImg(request.files['imageSub'])
     else:
         img = getImg(request.files['fileSub'])
     # dev only - save processed image
-    img.save('uploads/submitted.png', format="png")
+    # img.save('uploads/submitted.png', format="png")
     input = (np.asarray(img, dtype=np.uint8)).reshape(1, 784)   # Reshape image to 1D array.
     prediction = np.argmax(convolutional(input), axis=0)    # Gets prediction as vector and converts it into integer
-    # data = {'prediction': str(prediction)}
     return jsonify(prediction = str(prediction))    # sends back the result
 
 # Process feedback from user and retrian the model with new data

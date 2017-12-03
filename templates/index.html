@@ -6,7 +6,11 @@
         <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
     </head>
     <body>
-        <canvas id="can" width="280" height="280" style="border:2px solid;"></canvas>
+        <h1 style="text-align:center">Digit recognision</h1>
+        <p style="text-align:center">This is a digit recognision software based on MNIST data set and Tensorflow library</p>
+        <p style="text-align:center">Prediction model is learning from user feedback</p>
+        <p style="text-align:center">Please upload image of an digit or use canvas to draw one</p>
+        <canvas id="can" width="280" height="280" style="border:2px solid; text-align:center"></canvas>
         <br>
         <input id="submitCanvas" type="button" value="Canvas Submit" size="30">
         <input id="clear" type="button" value="Clear"size="23">
@@ -32,4 +36,7 @@
                 <button id="b9">9</button>
         </div>
     </body>
+    <footer>
+        <p>Contact information: <a href="mailto:G00328337@gmit.ie">G00328337@gmit.ie</a>.</p>
+    </footer>
     </html>
