@@ -133,7 +133,7 @@ function submitImg(input)
         if (this.status == 200) 
         {
             let answer = request.response.prediction;
-            doConfirm("The Anwer is "+answer+" right?",
+            doConfirm("The Answer is "+answer+", right?",
                 function() 
                 {
                     window.location = '/thankyou';
